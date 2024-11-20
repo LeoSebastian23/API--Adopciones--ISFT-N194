@@ -62,7 +62,7 @@ public class TipoMascotaController {
         if (!tipoMascotaRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        // Si existe, eliminamos la Movie y devolvemos 204 No Content.
+        // Si existe, eliminamos el tipo de mascota y devolvemos 204 No Content.
         tipoMascotaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
