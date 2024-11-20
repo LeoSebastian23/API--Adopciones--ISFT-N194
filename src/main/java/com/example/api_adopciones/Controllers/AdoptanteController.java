@@ -45,15 +45,15 @@ public class AdoptanteController {
     // Crea una nueva Movie.
     // Usamos @PostMapping para una solicitud POST y @CrossOrigin para acceso desde otros orígenes.
     @PostMapping
-    public ResponseEntity<Adoptante> createMovie(@RequestBody Adoptante adoptante) {
-        // @RequestBody vincula la entidad Movie enviada en el cuerpo de la solicitud.
-        // Guardamos la Movie en el repositorio y devolvemos el objeto creado con estado 201 Created.
+    public ResponseEntity<Adoptante> createAdoptante(@RequestBody Adoptante adoptante) {
+        // @RequestBody vincula la entidad Adoptante enviada en el cuerpo de la solicitud.
+        // Guardamos el adoptante en el repositorio y devolvemos el objeto creado con estado 201 Created.
         Adoptante savedAdoptante = adoptanteRepository.save(adoptante);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAdoptante);
     }
 
 
-    // Elimina una Movie por ID.
+    // Elimina un Adoptante por ID.
     // @DeleteMapping("/{id}") define que el metodo responderá a solicitudes DELETE en esta URL.
     // @CrossOrigin permite acceso desde otros orígenes.
     @DeleteMapping("/{id}")
@@ -62,11 +62,9 @@ public class AdoptanteController {
         if (!adoptanteRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        // Si existe, eliminamos la Movie y devolvemos 204 No Content.
+        // Si existe, eliminamos el Adoptante y devolvemos 204 No Content.
         adoptanteRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
 
-
-//crud
