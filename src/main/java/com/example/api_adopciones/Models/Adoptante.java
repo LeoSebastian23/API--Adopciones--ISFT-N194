@@ -1,32 +1,61 @@
 package com.example.api_adopciones.Models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "adoptantes")
-@Getter
-@Setter
 public class Adoptante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre", length = 50, nullable = false)
     private String nombre;
-
-    @Column(name = "apellido", length = 50, nullable = false)
     private String apellido;
-
-    @Column(name = "dni", length = 50, nullable = false)
     private int dni;
-
-    @Column(name = "celular", length = 50, nullable = false)
     private int celular;
-
-    @Column(name = "email", length = 50, nullable = false)
     private String email;
+    public String getNombre() {
+        return nombre;
+    }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    public String getApellido() {
+        return apellido;
+    }
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public int getDni() {
+        return dni;
+    }
+    public void setDni(int dni) {
+        this.dni = dni;
+    }
+    public int getCelular() {
+        return celular;
+    }
+
+    public void setCelular(int celular) {
+        this.celular = celular;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
 
 
