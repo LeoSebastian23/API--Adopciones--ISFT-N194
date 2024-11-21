@@ -27,8 +27,7 @@ public class AdoptanteController {
     // @GetMapping define que el metodo responderá a solicitudes GET.
     @GetMapping
     public List<Adoptante> getAllAdoptante() {
-        // Retorna todos los adoptantes usando el metodo findAll() del repositorio JPA.
-        return adoptanteRepository.findAll();
+        return adoptanteRepository.findAll(); // Retorna todos los adoptantes usando el metodo findAll() del repositorio JPA.
     }
 
 
@@ -42,7 +41,7 @@ public class AdoptanteController {
         return adoptante.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Crea una nueva Movie.
+    // Crea un nuevo Adoptante.
     // Usamos @PostMapping para una solicitud POST y @CrossOrigin para acceso desde otros orígenes.
     @PostMapping
     public ResponseEntity<Adoptante> createAdoptante(@RequestBody Adoptante adoptante) {
