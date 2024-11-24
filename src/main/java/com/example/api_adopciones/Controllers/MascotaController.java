@@ -1,8 +1,7 @@
 package com.example.api_adopciones.Controllers;
 
 import com.example.api_adopciones.Models.Mascota;
-import com.example.api_adopciones.Repositories.MascotaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.api_adopciones.Services.MascotaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,54 +12,43 @@ import java.util.Optional;
 @RequestMapping("/api/mascotas")
 public class MascotaController {
 
-    @Autowired
-    private MascotaRepository mascotaRepository;
+    private final MascotaService mascotaService;
 
-    // Obtener todas las mascotas
+    public MascotaController(MascotaService mascotaService) {
+        this.mascotaService = mascotaService;
+    }
+
     @GetMapping
     public List<Mascota> getAllMascotas() {
-        return mascotaRepository.findAll();
+        return mascotaService.getAllMascotas();
     }
 
-    // Obtener una mascota por ID
     @GetMapping("/{id}")
     public ResponseEntity<Mascota> getMascotaById(@PathVariable Long id) {
-        Optional<Mascota> mascota = mascotaRepository.findById(id);
-        return mascota.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<Mascota> mascota = mascotaService.getMascotaById(id);
+        return mascota.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Crear una nueva mascota
     @PostMapping
     public Mascota createMascota(@RequestBody Mascota mascota) {
-        return mascotaRepository.save(mascota);
+        return mascotaService.createMascota(mascota);
     }
 
-    // Actualizar una mascota
     @PutMapping("/{id}")
     public ResponseEntity<Mascota> updateMascota(@PathVariable Long id, @RequestBody Mascota mascotaDetails) {
-        Optional<Mascota> mascotaOptional = mascotaRepository.findById(id);
-        if (mascotaOptional.isPresent()) {
-            Mascota mascota = mascotaOptional.get();
-            mascota.setNombreMascota(mascotaDetails.getNombreMascota());
-            mascota.setTipoMascota(mascotaDetails.getTipoMascota());
-            mascota.setEdad(mascotaDetails.getEdad());
-            mascota.setDescripcion(mascotaDetails.getDescripcion());
-            return ResponseEntity.ok(mascotaRepository.save(mascota));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Mascota> updatedMascota = mascotaService.updateMascota(id, mascotaDetails);
+        return updatedMascota.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Eliminar una mascota
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMascota(@PathVariable Long id) {
-        if (mascotaRepository.existsById(id)) {
-            mascotaRepository.deleteById(id);
+        if (mascotaService.deleteMascota(id)) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 }
+
+
 
