@@ -1,7 +1,7 @@
 package com.example.api_adopciones.Controllers;
 
 import com.example.api_adopciones.Models.Adoptante;
-import com.example.api_adopciones.Repositories.AdoptanteRepository;
+import com.example.api_adopciones.Services.AdoptanteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,60 +10,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController //Indica que esta clase funciona como controlador.
-@RequestMapping("/api/adoptantes")//Ruta de gestion a peticiones.
-
+@RestController
+@RequestMapping("/api/adoptantes")
 public class AdoptanteController {
 
-    //indicamos con que repositorios va a trabajar.
-    @Autowired // Evita crear controladoras nuevas en cada ejecución.
-    private AdoptanteRepository adoptanteRepository;
+    private final AdoptanteService adoptanteService;
 
-    //ACCIONES CRUD
-    // Define qué controlador maneja cada petición basándote en el verbo (acción) y el URL.
-
-    // Solicita todos los Adoptantes.
-    // @CrossOrigin permite acceso desde otros orígenes.
-    // @GetMapping define que el metodo responderá a solicitudes GET.
-    @GetMapping
-    public List<Adoptante> getAllAdoptante() {
-        return adoptanteRepository.findAll(); // Retorna todos los adoptantes usando el metodo findAll() del repositorio JPA.
+    @Autowired
+    public AdoptanteController(AdoptanteService adoptanteService) {
+        this.adoptanteService = adoptanteService;
     }
 
+    @GetMapping
+    public List<Adoptante> getAllAdoptantes() {
+        return adoptanteService.getAllAdoptantes();
+    } // Obtener todos los adoptantes
 
-    // Solicita un Adoptante por su ID.
-    // @GetMapping("/{id}") define la ruta y el metodo HTTP para esta solicitud.
     @GetMapping("/{id}")
     public ResponseEntity<Adoptante> getAdoptanteById(@PathVariable Long id) {
-        // @PathVariable vincula el parámetro id al valor en la URL.
-        // Buscamos el Adoptante por ID, devolviendo 200 OK si se encuentra, o 404 Not Found si no.
-        Optional<Adoptante> adoptante = adoptanteRepository.findById(id);
-        return adoptante.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
+        return adoptanteService.getAdoptanteById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    } // Obtener adoptante por ID
 
-    // Crea un nuevo Adoptante.
-    // Usamos @PostMapping para una solicitud POST y @CrossOrigin para acceso desde otros orígenes.
     @PostMapping
     public ResponseEntity<Adoptante> createAdoptante(@RequestBody Adoptante adoptante) {
-        // @RequestBody vincula la entidad Adoptante enviada en el cuerpo de la solicitud.
-        // Guardamos el adoptante en el repositorio y devolvemos el objeto creado con estado 201 Created.
-        Adoptante savedAdoptante = adoptanteRepository.save(adoptante);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAdoptante);
-    }
+        Adoptante nuevoAdoptante = adoptanteService.createAdoptante(adoptante);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoAdoptante);
+    } // Crear nuevo adoptante
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Adoptante> updateAdoptante(@PathVariable Long id, @RequestBody Adoptante adoptanteDetails) {
+        return adoptanteService.updateAdoptante(id, adoptanteDetails)
+                .map(updatedAdoptante -> ResponseEntity.ok(updatedAdoptante))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    } // Actualizar adoptante
 
-    // Elimina un Adoptante por ID.
-    // @DeleteMapping("/{id}") define que el metodo responderá a solicitudes DELETE en esta URL.
-    // @CrossOrigin permite acceso desde otros orígenes.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAdoptante(@PathVariable Long id) {
-        // Si el ID no existe, devolvemos 404 Not Found.
-        if (!adoptanteRepository.existsById(id)) {
+        if (adoptanteService.deleteAdoptante(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
             return ResponseEntity.notFound().build();
         }
-        // Si existe, eliminamos el Adoptante y devolvemos 204 No Content.
-        adoptanteRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    } // Eliminar adoptante por ID
 }
+
 

@@ -21,32 +21,27 @@ public class SolicitudService {
         return solicitudRepository.findAll();
     }
 
+    // Obtener solicitud por ID
     public Optional<Solicitud> getSolicitudById(Long id) {
-        Optional<Solicitud> solicitud = solicitudRepository.findById(id);
-        return solicitud; // Devuelve Optional vacío si no encuentra la solicitud
+        return solicitudRepository.findById(id);
     }
-
 
     // Crear una nueva solicitud
     public Solicitud createSolicitud(Solicitud solicitud) {
         return solicitudRepository.save(solicitud);
     }
 
-    // Actualiza una solicitud
+    // Actualizar una solicitud
     public Optional<Solicitud> updateSolicitud(Long id, Solicitud solicitudDetails) {
-        Optional<Solicitud> solicitud = solicitudRepository.findById(id);
-        solicitud.ifPresent(s -> {
+        return solicitudRepository.findById(id).map(s -> {
             s.setAdoptante(solicitudDetails.getAdoptante());
             s.setMascota(solicitudDetails.getMascota());
-            s.setEstadoSolicitud(solicitudDetails.isEstadoSolicitud());
             s.setFechaSolicitud(solicitudDetails.getFechaSolicitud());
-            solicitudRepository.save(s);
+            return solicitudRepository.save(s);
         });
-        return solicitud;
     }
 
-
-    // Eliminar solicitud
+    // Eliminar una solicitud
     public boolean deleteSolicitud(Long id) {
         if (solicitudRepository.existsById(id)) {
             solicitudRepository.deleteById(id);
@@ -55,5 +50,6 @@ public class SolicitudService {
         return false;
     }
 }
+
 
 
