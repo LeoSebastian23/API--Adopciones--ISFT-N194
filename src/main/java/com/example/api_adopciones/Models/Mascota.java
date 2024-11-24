@@ -24,4 +24,5 @@ public class Mascota {
 
     private int edad;
     private String descripcion;
+    private boolean disponible;
 }
