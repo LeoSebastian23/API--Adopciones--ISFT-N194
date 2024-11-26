@@ -1,7 +1,6 @@
 package com.example.api_adopciones.Models;
 
 import jakarta.persistence.*;
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -2,8 +2,10 @@ package com.example.api_adopciones.Controllers;
 
 import com.example.api_adopciones.Models.Mascota;
 import com.example.api_adopciones.Services.MascotaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.api_adopciones.DTOs.MascotaDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,10 +32,16 @@ public class MascotaController {
     }
 
     @PostMapping
-    public Mascota createMascota(@RequestBody Mascota mascota) {
-        return mascotaService.createMascota(mascota);
+    public ResponseEntity<?> createMascota(@RequestBody MascotaDTO mascotaDTO) {
+        try {
+            Mascota mascota = mascotaService.createMascota(mascotaDTO);
+            return ResponseEntity.ok(mascota);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la mascota");
+        }
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Mascota> updateMascota(@PathVariable Long id, @RequestBody Mascota mascotaDetails) {
