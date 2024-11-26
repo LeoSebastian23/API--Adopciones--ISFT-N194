@@ -28,12 +28,13 @@ public class MascotaService {
         return mascotaRepository.save(mascota);
     }
 
+
     public Optional<Mascota> updateMascota(Long id, Mascota mascotaDetails) {
         Optional<Mascota> mascota = mascotaRepository.findById(id);
         mascota.ifPresent(m -> {
             m.setNombreMascota(mascotaDetails.getNombreMascota());
             m.setTipoMascota(mascotaDetails.getTipoMascota());
-            m.setEdad(mascotaDetails.getEdad());
+            m.setIngreso(mascotaDetails.getIngreso());
             m.setDescripcion(mascotaDetails.getDescripcion());
             mascotaRepository.save(m);
         });

@@ -34,6 +34,7 @@ public class MascotaController {
         return mascotaService.createMascota(mascota);
     }
 
+
     @PutMapping("/{id}")
     public ResponseEntity<Mascota> updateMascota(@PathVariable Long id, @RequestBody Mascota mascotaDetails) {
         Optional<Mascota> updatedMascota = mascotaService.updateMascota(id, mascotaDetails);
