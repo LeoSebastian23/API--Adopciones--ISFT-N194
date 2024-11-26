@@ -5,6 +5,7 @@ import com.example.api_adopciones.Models.Mascota;
 import com.example.api_adopciones.Models.TipoMascota;
 import com.example.api_adopciones.Repositories.MascotaRepository;
 import com.example.api_adopciones.Repositories.TipoMascotaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.api_adopciones.DTOs.MascotaDTO;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,13 +16,12 @@ import java.util.Optional;
 
 @Service
 public class MascotaService {
-
-    private final MascotaRepository mascotaRepository;
-    private final TipoMascotaRepository tipoMascotaRepository;
+    @Autowired
+    private  MascotaRepository mascotaRepository;
+    @Autowired
+    private TipoMascotaRepository tipoMascotaRepository;
 
     public MascotaService(MascotaRepository mascotaRepository, TipoMascotaRepository tipoMascotaRepository) {
-        this.mascotaRepository = mascotaRepository;
-        this.tipoMascotaRepository = tipoMascotaRepository;
     }
 
     public List<Mascota> getAllMascotas() {
@@ -34,8 +34,9 @@ public class MascotaService {
 
     public Mascota createMascota(MascotaDTO mascotaDTO) {
         // Buscar el TipoMascota por ID
-        TipoMascota tipoMascota = tipoMascotaRepository.findById(mascotaDTO.getTipoMascota())
-                .orElseThrow(() -> new IllegalArgumentException("Tipo de mascota no encontrado"));
+
+        TipoMascota tipoMascota = tipoMascotaRepository.findById(mascotaDTO.getTipoMascotaId())
+                .orElseThrow(() -> new IllegalArgumentException("Tipo de mascota no encontrado " + mascotaDTO));
 
         // Mapear DTO a la entidad
         Mascota mascota = new Mascota();
