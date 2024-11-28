@@ -16,6 +16,4 @@ public class MascotaDTO {
     private LocalDate ingreso;
     private String descripcion;
     private boolean disponible;
-
-
 }
