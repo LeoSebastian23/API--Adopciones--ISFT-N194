@@ -1,9 +1,10 @@
 package com.example.api_adopciones.Models;
 
 import jakarta.persistence.*;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -20,9 +21,8 @@ public class Mascota {
 
     @ManyToOne
     @JoinColumn(name = "tipo_mascota_id", nullable = false)
-    private TipoMascota tipoMascota;
-
-    private int edad;
+    private TipoMascota tipoMascotaId;
+    private LocalDate ingreso;
     private String descripcion;
     private boolean disponible;
 }
