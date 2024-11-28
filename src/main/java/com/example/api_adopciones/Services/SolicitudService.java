@@ -28,6 +28,7 @@ public class SolicitudService {
     }
 
 
+
     // Obtener todas las solicitudes
     public List<Solicitud> getAllSolicitudes() {
         return solicitudRepository.findAll();
@@ -38,36 +39,58 @@ public class SolicitudService {
         return solicitudRepository.findById(id);
     }
 
+    // Crear solicitud
     public Solicitud createSolicitud(SolicitudDTO solicitudDTO) {
-        Mascota mascota = mascotaRepository.findById(solicitudDTO.getIdMascota())
-                .orElseThrow(() -> new IllegalArgumentException("La mascota no existe"));
-
-        Adoptante adoptante = adoptanteRepository.findById(solicitudDTO.getDniAdoptante())
-                .orElseThrow(() -> new IllegalArgumentException("El adoptante no existe"));
-
-        Solicitud solicitud = new Solicitud();
-        solicitud.setMascota(mascota);
-        solicitud.setAdoptante(adoptante);
-        solicitud.setFechaSolicitud(solicitudDTO.getFechaSolicitud());
-
-        return solicitudRepository.save(solicitud);
-    }
-
-    // Actualizar una solicitud
-    public Solicitud updateSolicitud(Long id, SolicitudDTO solicitudDTO) {
-        return solicitudRepository.findById(id).map(solicitud -> {
+        try {
+            // Buscar la mascota
             Mascota mascota = mascotaRepository.findById(solicitudDTO.getIdMascota())
                     .orElseThrow(() -> new IllegalArgumentException("La mascota no existe"));
 
-            Adoptante adoptante = adoptanteRepository.findById(solicitudDTO.getDniAdoptante())
+            // Buscar el adoptante
+            Adoptante adoptante = adoptanteRepository.findByDni(solicitudDTO.getDniAdoptante())
                     .orElseThrow(() -> new IllegalArgumentException("El adoptante no existe"));
 
+            // Crear la solicitud
+            Solicitud solicitud = new Solicitud();
             solicitud.setMascota(mascota);
             solicitud.setAdoptante(adoptante);
             solicitud.setFechaSolicitud(solicitudDTO.getFechaSolicitud());
+
+            // Guardar la solicitud
+            return solicitudRepository.save(solicitud);
+        } catch (IllegalArgumentException e) {
+            // Agregar más información en el mensaje
+            throw new RuntimeException("Error en la solicitud: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // Agregar más información en el mensaje de excepción general
+            throw new RuntimeException("Error desconocido al crear la solicitud: " + e.getMessage(), e);
+        }
+    }
+
+
+
+    // Actualizar una solicitud
+    public Solicitud updateSolicitud(Long id, SolicitudDTO solicitudDTO) {
+        // Buscar la solicitud existente por ID
+        return solicitudRepository.findById(id).map(solicitud -> {
+            // Validar y obtener la mascota asociada
+            Mascota mascota = mascotaRepository.findById(solicitudDTO.getIdMascota())
+                    .orElseThrow(() -> new IllegalArgumentException("La mascota no existe"));
+
+            // Validar y obtener el adoptante asociado
+            Adoptante adoptante = adoptanteRepository.findByDni(solicitudDTO.getDniAdoptante())
+                    .orElseThrow(() -> new IllegalArgumentException("El adoptante no existe"));
+
+            // Actualizar los campos de la solicitud
+            solicitud.setMascota(mascota);
+            solicitud.setAdoptante(adoptante);
+            solicitud.setFechaSolicitud(solicitudDTO.getFechaSolicitud());
+
+            // Guardar la solicitud actualizada en el repositorio
             return solicitudRepository.save(solicitud);
         }).orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
     }
+
 
 
     public boolean deleteSolicitud(Long id) {
@@ -82,14 +105,13 @@ public class SolicitudService {
         }
     }
 
-    /*
-    public String procesarSolicitudAdopcion(Solicitud solicitud) {
-        if (solicitud == null || solicitud.getMascota() == null) {
+
+    public String procesarSolicitudAdopcion(SolicitudDTO solicitudDTO) {
+        if (solicitudDTO == null || solicitudDTO.getIdMascota() == null) {
             throw new IllegalArgumentException("La solicitud o la mascota asociada no puede ser nula");
         }
 
-        // Obtenemos el ID de la mascota de la solicitud
-        Long mascotaId = solicitud.getMascota().getId();
+        Long mascotaId = solicitudDTO.getIdMascota();  // Usamos directamente el id de la mascota
 
         // Buscar la mascota en la base de datos
         Mascota mascota = mascotaRepository.findById(mascotaId)
@@ -102,11 +124,10 @@ public class SolicitudService {
 
         // Aprobar la adopción: marcar la mascota como no disponible
         mascota.setDisponible(false);
-        mascotaRepository.save(mascota);  // Guardar solo si es necesario
+        mascotaRepository.save(mascota); // Guardar el estado actualizado de la mascota
 
         return "Aprobada";
     }
-    */
 
 }
 
