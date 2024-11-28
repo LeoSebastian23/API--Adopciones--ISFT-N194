@@ -88,13 +88,15 @@ public class AdoptanteController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAdoptante(@PathVariable Long id) {
-        if (adoptanteService.deleteAdoptante(id)) {
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteAdoptante(@PathVariable Long id) {
+        boolean isDeleted = adoptanteService.deleteAdoptante(id);
+        if (isDeleted) {
+            return ResponseEntity.status(HttpStatus.OK).body("Adoptante con ID " + id + " eliminado exitosamente.");
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Adoptante con ID " + id + " no encontrado.");
         }
-    } // Eliminar adoptante por ID
+    }
+
 }
 
 
