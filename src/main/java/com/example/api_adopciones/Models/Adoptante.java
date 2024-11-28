@@ -17,8 +17,8 @@ public class Adoptante {
 
     private String nombre;
     private String apellido;
-    private int dni;
-    private int celular;
+    private Long  dni;
+    private Long  celular;
     private String email;
 }
 

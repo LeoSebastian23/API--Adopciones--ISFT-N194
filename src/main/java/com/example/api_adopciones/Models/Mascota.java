@@ -21,8 +21,7 @@ public class Mascota {
 
     @ManyToOne
     @JoinColumn(name = "tipo_mascota_id", nullable = false)
-    private TipoMascota tipoMascota;
-
+    private TipoMascota tipoMascotaId;
     private LocalDate ingreso;
     private String descripcion;
     private boolean disponible;

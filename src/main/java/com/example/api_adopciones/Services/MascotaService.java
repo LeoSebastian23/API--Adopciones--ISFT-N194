@@ -41,7 +41,7 @@ public class MascotaService {
         // Mapear DTO a la entidad
         Mascota mascota = new Mascota();
         mascota.setNombreMascota(mascotaDTO.getNombreMascota());
-        mascota.setTipoMascota(tipoMascota);
+        mascota.setTipoMascotaId(tipoMascota);
         mascota.setIngreso(mascotaDTO.getIngreso());
         mascota.setDescripcion(mascotaDTO.getDescripcion());
         mascota.setDisponible(mascotaDTO.isDisponible());
@@ -50,21 +50,27 @@ public class MascotaService {
         return mascotaRepository.save(mascota);
     }
 
+    public Mascota updateMascota(Long id, MascotaDTO mascotaDTO) {
+        // Verifica que la mascota existe
+        Mascota existingMascota = mascotaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Mascota no encontrada con ID " + id));
 
+        // Verifica que el tipo de mascota existe
+        TipoMascota tipoMascota = tipoMascotaRepository.findById(mascotaDTO.getTipoMascotaId())
+                .orElseThrow(() -> new IllegalArgumentException("Tipo de mascota no encontrado con ID " + mascotaDTO.getTipoMascotaId()));
 
+        // Actualiza los campos
+        existingMascota.setNombreMascota(mascotaDTO.getNombreMascota());
+        existingMascota.setTipoMascotaId(tipoMascota);
+        existingMascota.setIngreso(mascotaDTO.getIngreso());
+        existingMascota.setDescripcion(mascotaDTO.getDescripcion());
+        existingMascota.setDisponible(mascotaDTO.isDisponible());
 
-    public Optional<Mascota> updateMascota(Long id, Mascota mascotaDetails) {
-        Optional<Mascota> mascota = mascotaRepository.findById(id);
-        mascota.ifPresent(m -> {
-            m.setNombreMascota(mascotaDetails.getNombreMascota());
-            m.setTipoMascota(mascotaDetails.getTipoMascota());
-            m.setIngreso(mascotaDetails.getIngreso());
-            m.setDescripcion(mascotaDetails.getDescripcion());
-            m.setDisponible(mascotaDetails.isDisponible());
-            mascotaRepository.save(m);
-        });
-        return mascota;
+        // Guarda los cambios
+        return mascotaRepository.save(existingMascota);
     }
+
+
 
     public boolean deleteMascota(Long id) {
         if (mascotaRepository.existsById(id)) {

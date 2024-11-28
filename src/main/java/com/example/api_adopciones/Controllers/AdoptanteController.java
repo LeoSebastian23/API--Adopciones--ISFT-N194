@@ -1,7 +1,10 @@
 package com.example.api_adopciones.Controllers;
 
+import com.example.api_adopciones.DTOs.AdoptanteDTO;
+import com.example.api_adopciones.Exceptions.AdoptanteCreationException;
 import com.example.api_adopciones.Models.Adoptante;
 import com.example.api_adopciones.Services.AdoptanteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,24 +30,62 @@ public class AdoptanteController {
     } // Obtener todos los adoptantes
 
     @GetMapping("/{id}")
-    public ResponseEntity<Adoptante> getAdoptanteById(@PathVariable Long id) {
-        return adoptanteService.getAdoptanteById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    } // Obtener adoptante por ID
+    public ResponseEntity<?> getAdoptanteById(@PathVariable Long id) {
+        try {
+            AdoptanteDTO adoptanteDTO = adoptanteService.getAdoptanteById(id);
+            return ResponseEntity.ok(adoptanteDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el adoptante.");
+        }
+    }
+
+    @ExceptionHandler(AdoptanteCreationException.class)
+    public ResponseEntity<String> handleAdoptanteCreationException(AdoptanteCreationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 
     @PostMapping
-    public ResponseEntity<Adoptante> createAdoptante(@RequestBody Adoptante adoptante) {
-        Adoptante nuevoAdoptante = adoptanteService.createAdoptante(adoptante);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoAdoptante);
-    } // Crear nuevo adoptante
+    public ResponseEntity<?> createAdoptante(@RequestBody AdoptanteDTO adoptanteDTO) {
+        try {
+            // Mostrar el contenido del DTO recibido
+            System.out.println("Recibido AdoptanteDTO: " + adoptanteDTO);
+
+            // Crear el objeto Adoptante
+            Adoptante adoptante = new Adoptante();
+            adoptante.setNombre(adoptanteDTO.getNombre());
+            adoptante.setApellido(adoptanteDTO.getApellido());
+            adoptante.setDni(adoptanteDTO.getDni());
+            adoptante.setCelular(adoptanteDTO.getCelular());
+            adoptante.setEmail(adoptanteDTO.getEmail());
+
+            // Guardar el adoptante (aquí deberías ver si se guarda correctamente o si hay errores)
+            adoptante = adoptanteService.createAdoptante(adoptanteDTO);
+
+            return ResponseEntity.ok("Adoptante creado exitosamente con ID: " + adoptante.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear el adoptante: " + e.getMessage());
+        }
+    }
+
+
+
 
     @PutMapping("/{id}")
-    public ResponseEntity<Adoptante> updateAdoptante(@PathVariable Long id, @RequestBody Adoptante adoptanteDetails) {
-        return adoptanteService.updateAdoptante(id, adoptanteDetails)
-                .map(updatedAdoptante -> ResponseEntity.ok(updatedAdoptante))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    } // Actualizar adoptante
+    public ResponseEntity<?> updateAdoptante(@PathVariable Long id, @RequestBody AdoptanteDTO adoptanteDTO) {
+        try {
+            Adoptante updatedAdoptante = adoptanteService.updateAdoptante(id, adoptanteDTO);
+            return ResponseEntity.ok("Adoptante con ID " + id + " actualizado exitosamente.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el adoptante.");
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAdoptante(@PathVariable Long id) {
